@@ -1,0 +1,12 @@
+services:
+  youtube_data_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: youtube_data_api
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1  # Optional, to get real-time output
+    stdin_open: true  # Keep stdin open to allow user input
+    tty: true         # Allocate a pseudo-TTY
