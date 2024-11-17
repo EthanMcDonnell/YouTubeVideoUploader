@@ -53,9 +53,17 @@ def find_single_video(folder_path):
     # Check for multiple or no video files
     if len(video_files) == 0:
         raise FileNotFoundError("No video files found in the folder.")
-    elif len(video_files) > 1:
-        raise ValueError(
-            "Multiple video files found in the folder. Only one video allowed in input folder")
 
     # Return the single video file name
     return os.path.join(folder_path, video_files[0]), os.path.splitext(os.path.basename(video_files[0]))[0]
+
+
+def get_number_of_videos(folder_path):
+
+    video_extensions = {'.mp4', '.mkv', '.avi',
+                        '.mov', '.flv', '.wmv', '.webm'}
+
+    # List all files in the folder with video extensions
+    video_files = [file for file in os.listdir(folder_path)
+                   if os.path.splitext(file)[1].lower() in video_extensions]
+    return len(video_files)

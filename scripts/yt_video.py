@@ -60,6 +60,7 @@ def _resumable_upload(request):
                 if 'id' in response:
                     print(
                         f'Video id "{response["id"]}" was successfully uploaded.')
+                    return True
                 else:
                     exit(
                         f'The upload failed with an unexpected response: {response}')
