@@ -1,9 +1,14 @@
 import toml
-
+import os
 
 class Config:
     _instance = None
-    file_path = "config.toml"
+
+    # Get the absolute path to the directory where the script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Safely join the directory path with the config file name
+    file_path = os.path.join(script_dir, "config.toml")
 
     def __new__(cls):
         if cls._instance is None:

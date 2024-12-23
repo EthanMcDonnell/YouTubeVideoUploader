@@ -1,9 +1,9 @@
 
-from config import *
+from config.config import *
 import os
 import random
 import time
-from utils import *
+from scripts.utils import *
 from googleapiclient.errors import HttpError
 from http.client import HTTPException
 
@@ -22,13 +22,16 @@ from googleapiclient.http import MediaFileUpload
 
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 config: Config = Config()
-SECRET_FILE = config.get("configuration", "secrets_folder")
+SECRET_FILE = config.get("credentials", "secret_file")
+TOKEN_FILE = config.get("credentials", "token_file")
 
 def _youtube_authenticate():
     # Check if token.json exists (stores user's access and refresh tokens)
+    if TOKEN_FILE == None or SECRET_FILE == None:
+        raise FileExistsError()
     creds = None
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    if os.path.exists(TOKEN_FILE):
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
 
     # If no valid credentials are available, go through the authorization flow
     if not creds or not creds.valid:
@@ -40,7 +43,7 @@ def _youtube_authenticate():
             creds = flow.run_local_server(port=0)
 
         # Save the credentials for future use
-        with open("token.json", "w") as token:
+        with open(TOKEN_FILE, "w") as token:
             token.write(creds.to_json())
     print("Creds validated")
     print("Building")
@@ -100,7 +103,7 @@ def video_insert(video_name, video_path):
         body={
             "snippet": {
                 "categoryId": "22",
-                "description": "#shorts #funny #interesting #confessions",
+                "description": "#shorts #ytshorts #funny #interesting #memes #trending #bangers #music",
                 "title": video_name
             },
             "status": {
@@ -114,4 +117,4 @@ def video_insert(video_name, video_path):
         media_body=MediaFileUpload(video_path, chunksize=-1, resumable=True)
     )
 
-    _resumable_upload(request)
+    return _resumable_upload(request)

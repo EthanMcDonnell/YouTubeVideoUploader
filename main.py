@@ -1,11 +1,12 @@
-from yt_video import *
-from utils import *
-
+from scripts.yt_video import *
+from scripts.utils import *
+from config.config import Config
 def main():
-    num_of_videos = get_number_of_videos("input")
+    input_vid_dir = Config().get("credentials", "input_vid_dir")
+    num_of_videos = get_number_of_videos(input_vid_dir)
     last_video = ""
     for _ in range(num_of_videos):
-        video_path, video_name = find_single_video("input")
+        video_path, video_name = find_single_video(input_vid_dir)
         if (last_video == video_name):
             print("duplicate video found")
             return
