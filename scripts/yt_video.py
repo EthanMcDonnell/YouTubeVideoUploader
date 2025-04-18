@@ -19,22 +19,23 @@ from googleapiclient.discovery import build
 
 from googleapiclient.http import MediaFileUpload
 
-
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 config: Config = Config()
 SECRET_FILE = config.get("credentials", "secret_file")
-TOKEN_FILE = config.get("credentials", "token_file")
 
-def _youtube_authenticate():
+
+def youtube_authenticate(token_path):
+    print("Check Auth")
     # Check if token.json exists (stores user's access and refresh tokens)
-    if TOKEN_FILE == None or SECRET_FILE == None:
+    if token_path == None or SECRET_FILE == None:
         raise FileExistsError()
     creds = None
-    if os.path.exists(TOKEN_FILE):
-        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+    if os.path.exists(token_path):
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
 
     # If no valid credentials are available, go through the authorization flow
     if not creds or not creds.valid:
+        print("No Valid creds detected")
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(google.auth.transport.requests.Request())
         else:
@@ -43,7 +44,7 @@ def _youtube_authenticate():
             creds = flow.run_local_server(port=0)
 
         # Save the credentials for future use
-        with open(TOKEN_FILE, "w") as token:
+        with open(token_path, "w") as token:
             token.write(creds.to_json())
     print("Creds validated")
     print("Building")
@@ -91,29 +92,27 @@ def video_insert_short(video_name, video_path):
         return
     video_insert(video_name, video_path)
 
-def video_insert(video_name, video_path):
+def video_insert(youtube_object, video_name, video_path, description, category_id:int):
     # Disable OAuthlib's HTTPS verification when running locally.
     # *DO NOT* leave this option enabled in production.
-    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-
-    youtube = _youtube_authenticate()
-
-    request = youtube.videos().insert(
+    print(f"Starting upload of {video_name} with path {video_path}")
+    if video_name is None or video_path is None:
+        raise ValueError("Video name or path is None")
+    
+    
+    request = youtube_object.videos().insert(
         part="snippet,status",
         body={
             "snippet": {
-                "categoryId": "22",
-                "description": "#shorts #ytshorts #funny #interesting #memes #trending #bangers #music",
+                "categoryId": f"{category_id}",
+                "description": description,
                 "title": video_name
             },
             "status": {
-                "privacyStatus": "public"
+                "privacyStatus": "public",
+                "selfDeclaredMadeForKids" : "false"
             }
         },
-
-        # TODO: For this request to work, you must replace "YOUR_FILE"
-        #       with a pointer to the actual file you are uploading.
-        
         media_body=MediaFileUpload(video_path, chunksize=-1, resumable=True)
     )
 

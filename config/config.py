@@ -29,6 +29,8 @@ class Config:
             print(f"Error: Failed to parse TOML file '{file_path}'.")
             self.config = {}
 
-    def get(self, heading, sub_key):
+    def get(self, heading, sub_key=None):
         """Get a value from the configuration using heading and sub-key."""
+        if sub_key is None:
+            return self.config.get(heading, {})
         return self.config.get(heading, {}).get(sub_key, None)

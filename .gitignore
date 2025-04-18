@@ -163,3 +163,4 @@ cython_debug/
 **.toml
 input/**
 !input/.gitkeep
+.DS_Store

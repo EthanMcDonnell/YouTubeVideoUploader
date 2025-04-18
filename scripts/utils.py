@@ -1,3 +1,4 @@
+import shutil
 import os
 import json
 from moviepy.editor import VideoFileClip
@@ -10,6 +11,38 @@ def is_video_less_than_a_minute(file_path):
     clip.close()
     print(f"video '{file_path}' is less than a minute {duration < 60}")
     return duration < 60
+
+
+def move_file(source_path, destination_path):
+    """
+    Move a file from the source path to the destination path.
+
+    Args:
+        source_path (str): The path of the file to move.
+        destination_path (str): The path to move the file to.
+
+    Returns:
+        None
+
+    Raises:
+        FileNotFoundError: If the source file does not exist.
+        PermissionError: If there are insufficient permissions to move the file.
+        Exception: For other unexpected errors.
+    """
+    try:
+        if not os.path.exists(source_path):
+            raise FileNotFoundError(
+                f"Source file '{source_path}' does not exist.")
+
+        # Ensure the destination directory exists
+        os.makedirs(os.path.dirname(destination_path), exist_ok=True)
+
+        # Move the file
+        shutil.move(source_path, destination_path)
+        print(f"File moved from '{source_path}' to '{destination_path}'")
+    except Exception as e:
+        print(f"Error moving file: {e}")
+
 
 def get_field_from_json(file_path, *field_path):
     """
