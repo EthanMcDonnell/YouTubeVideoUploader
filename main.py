@@ -55,4 +55,4 @@ if __name__ == "__main__":
         print(f"Error: Channel {args.channel_name} not found in {channels}")
         sys.exit(1)
     
-    main(channels.get(args.channel_name, None), description.get(args.channel_name, "Thanks, sub for more :)"), title_additions.get(args.channel_name), category_id.get(args.channel_name, 24))
+    main(channels.get(args.channel_name, None), description.get(args.channel_name, "Thanks, sub for more :)"), title_additions.get(args.channel_name, ""), category_id.get(args.channel_name, 24))
